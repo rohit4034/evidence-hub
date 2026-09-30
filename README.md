@@ -75,7 +75,7 @@ npm run dev
 - Gateway: `GET /phase1`, `GET /services`
 - Evidence: `POST /evidence/workspaces`, `POST /evidence/documents`, `POST /evidence/chunks/preview`, `POST /evidence/retrieval/search`, `POST /evidence/citations/validate`
 - Compliance: `GET /compliance/rule-packs`, `POST /compliance/reviews`, `POST /compliance/findings/draft`, `POST /compliance/reports/contract`
-- AI: `GET /model-routes`, `POST /model-routes/reload`, `POST /ai/route`, `GET /ai/secret-status`
+- AI: `GET /model-routes`, `POST /model-routes/reload`, `POST /ai/route`, `POST /ai/chat`, `GET /ai/secret-status`
 - Support: `POST /support/triage`
 - Worker: `GET /jobs/queues`, `POST /jobs`
 
@@ -89,3 +89,5 @@ This repo is intended to be pushed to GitHub and then connected in Dokploy as a 
 PYTHONPATH=.:packages/schemas pytest tests
 npm run build:web
 ```
+
+The working web app uses `/api/*` through the gateway. In local Vite development this is proxied by Vite; in Docker/Dokploy this is proxied by Nginx to `api-gateway:8000`.

@@ -128,3 +128,19 @@ class CitedAIOutput(BaseModel):
     model_route: ModelClass
     model_config_version: str
     prompt_version: str
+
+
+
+class AIChatRequest(BaseModel):
+    task_type: AITaskType = AITaskType.compliance_gap_analysis
+    workspace_id: Optional[str] = None
+    prompt: str
+    system_prompt: str = "You are Evidence Hub's internal compliance analysis assistant. Answer with concise, reviewable findings and cite only the provided evidence chunk IDs."
+    evidence_chunk_ids: list[str] = Field(default_factory=list)
+    risk: Literal["low", "medium", "high"] = "medium"
+    input_token_estimate: int = Field(default=0, ge=0)
+    max_output_tokens: Optional[int] = Field(default=None, ge=1)
+
+
+class AIChatResponse(CitedAIOutput):
+    raw_text: str
