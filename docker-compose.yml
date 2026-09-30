@@ -5,7 +5,7 @@ services:
       dockerfile: infra/docker/web.Dockerfile
     env_file: .env
     ports:
-      - "3000:80"
+      - "3100:80"
     depends_on:
       api-gateway:
         condition: service_healthy

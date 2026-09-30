@@ -42,7 +42,7 @@ docker compose up --build
 
 Services:
 
-- Web: http://localhost:3000
+- Web: http://localhost:3100
 - API Gateway: http://localhost:8000
 - AI Service: http://localhost:8001
 - Evidence Service: http://localhost:8002
