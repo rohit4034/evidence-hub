@@ -1,0 +1,104 @@
+{
+  "version": "2026.1-phase1",
+  "default_provider": "nvidia",
+  "routes": [
+    {
+      "route": "small_reasoning",
+      "provider": "nvidia",
+      "model": "nvidia/nemotron-3-nano-30b-a3b",
+      "enabled": true,
+      "priority": 10,
+      "timeout_seconds": 45,
+      "max_input_tokens": 8192,
+      "max_output_tokens": 2048,
+      "json_schema_required": true,
+      "prompt_version": "phase1-small-reasoning",
+      "tags": ["classification", "normalization", "low-risk"]
+    },
+    {
+      "route": "large_reasoning",
+      "provider": "nvidia",
+      "model": "nvidia/nemotron-3-ultra-550b-a55b",
+      "enabled": true,
+      "priority": 20,
+      "timeout_seconds": 120,
+      "max_input_tokens": 32768,
+      "max_output_tokens": 4096,
+      "json_schema_required": true,
+      "prompt_version": "phase1-large-reasoning",
+      "tags": ["high-impact", "ambiguous", "review"]
+    },
+    {
+      "route": "embedding",
+      "provider": "nvidia",
+      "model": "nvidia/nv-embedqa-e5-v5",
+      "enabled": true,
+      "priority": 10,
+      "timeout_seconds": 60,
+      "tags": ["retrieval", "chunks"]
+    },
+    {
+      "route": "rerank",
+      "provider": "nvidia",
+      "model": "nvidia/nv-rerankqa-mistral-4b-v3",
+      "enabled": true,
+      "priority": 10,
+      "timeout_seconds": 60,
+      "tags": ["retrieval", "citations"]
+    },
+    {
+      "route": "vision_language",
+      "provider": "nvidia",
+      "model": "nvidia/nemotron-nano-12b-v2-vl",
+      "enabled": true,
+      "priority": 10,
+      "timeout_seconds": 120,
+      "json_schema_required": true,
+      "prompt_version": "phase1-vision-language",
+      "tags": ["screenshots", "scanned-pages", "tables"]
+    },
+    {
+      "route": "vision_detection",
+      "provider": "nvidia",
+      "model": "nvidia/nv-grounding-dino",
+      "enabled": true,
+      "priority": 10,
+      "timeout_seconds": 120,
+      "tags": ["detection", "figures", "diagrams"]
+    },
+    {
+      "route": "classification",
+      "provider": "nvidia",
+      "model": "nvidia/nemotron-3-nano-30b-a3b",
+      "enabled": true,
+      "priority": 10,
+      "timeout_seconds": 30,
+      "json_schema_required": true,
+      "prompt_version": "phase1-classification",
+      "tags": ["support", "routing", "tags"]
+    },
+    {
+      "route": "extraction",
+      "provider": "nvidia",
+      "model": "nvidia/nemotron-3-nano-30b-a3b",
+      "enabled": true,
+      "priority": 10,
+      "timeout_seconds": 60,
+      "json_schema_required": true,
+      "prompt_version": "phase1-extraction",
+      "tags": ["fields", "obligations", "evidence"]
+    },
+    {
+      "route": "reporting",
+      "provider": "nvidia",
+      "model": "nvidia/nemotron-3-ultra-550b-a55b",
+      "enabled": true,
+      "priority": 20,
+      "timeout_seconds": 180,
+      "json_schema_required": true,
+      "prompt_version": "phase1-reporting",
+      "tags": ["reports", "summaries", "citations"]
+    }
+  ]
+}
+

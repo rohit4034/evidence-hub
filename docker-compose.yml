@@ -1,0 +1,173 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: infra/docker/web.Dockerfile
+    env_file: .env
+    ports:
+      - "3000:80"
+    depends_on:
+      api-gateway:
+        condition: service_healthy
+    restart: unless-stopped
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: infra/docker/service.Dockerfile
+      args:
+        SERVICE_MODULE: services.api_gateway.app.main:app
+    env_file: .env
+    environment:
+      SERVICE_NAME: api-gateway
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-m", "services.common.healthcheck"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  ai-service:
+    build:
+      context: .
+      dockerfile: infra/docker/service.Dockerfile
+      args:
+        SERVICE_MODULE: services.ai_service.app.main:app
+    env_file: .env
+    environment:
+      SERVICE_NAME: ai-service
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./services/ai-service/config:/app/config:ro
+    healthcheck:
+      test: ["CMD", "python", "-m", "services.common.healthcheck"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  evidence-service:
+    build:
+      context: .
+      dockerfile: infra/docker/service.Dockerfile
+      args:
+        SERVICE_MODULE: services.evidence_service.app.main:app
+    env_file: .env
+    environment:
+      SERVICE_NAME: evidence-service
+    ports:
+      - "8002:8000"
+    volumes:
+      - uploaded-files:/data/uploads
+    healthcheck:
+      test: ["CMD", "python", "-m", "services.common.healthcheck"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  compliance-service:
+    build:
+      context: .
+      dockerfile: infra/docker/service.Dockerfile
+      args:
+        SERVICE_MODULE: services.compliance_service.app.main:app
+    env_file: .env
+    environment:
+      SERVICE_NAME: compliance-service
+    ports:
+      - "8003:8000"
+    healthcheck:
+      test: ["CMD", "python", "-m", "services.common.healthcheck"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  support-service:
+    build:
+      context: .
+      dockerfile: infra/docker/service.Dockerfile
+      args:
+        SERVICE_MODULE: services.support_service.app.main:app
+    env_file: .env
+    environment:
+      SERVICE_NAME: support-service
+    ports:
+      - "8004:8000"
+    healthcheck:
+      test: ["CMD", "python", "-m", "services.common.healthcheck"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  worker-service:
+    build:
+      context: .
+      dockerfile: infra/docker/service.Dockerfile
+      args:
+        SERVICE_MODULE: services.worker_service.app.main:app
+    env_file: .env
+    environment:
+      SERVICE_NAME: worker-service
+    ports:
+      - "8005:8000"
+    volumes:
+      - uploaded-files:/data/uploads
+      - generated-reports:/data/reports
+      - eval-artifacts:/data/evals
+    healthcheck:
+      test: ["CMD", "python", "-m", "services.common.healthcheck"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_DB: evidence_hub
+      POSTGRES_USER: evidence
+      POSTGRES_PASSWORD: evidence
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./infra/docker/postgres-init.sql:/docker-entrypoint-initdb.d/001-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U evidence -d evidence_hub"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
+  redis-data:
+  uploaded-files:
+  generated-reports:
+  eval-artifacts:
+
